@@ -1,251 +1,164 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Premium Profile</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الملف الشخصي الفخم | Premium Profile</title>
+    <!-- استيراد خطوط مميزة -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f9f295 50%, #b38728 100%);
+            --dark-bg: #0a0a0a;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+        }
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet">
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: 'Cairo', sans-serif;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            overflow-x: hidden;
+            color: #fff;
+        }
 
-<style>
+        /* خلفية اختيارية مع صورة */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: url('99085.jpg') no-repeat center center/cover;
+            opacity: 0.4;
+            z-index: -1;
+        }
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
+        .container {
+            width: 90%;
+            max-width: 400px;
+            padding: 40px 20px;
+            text-align: center;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 40px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: fadeIn 1.2s ease-out;
+        }
 
-body{
-    font-family:'Cairo',sans-serif;
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    overflow:hidden;
-    color:white;
+        /* صورة شخصية دائرية (اختياري) */
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            border: 2px solid #d4af37;
+            padding: 5px;
+            background: rgba(0,0,0,0.5);
+        }
 
-    /* خلفية سوداء فخمة */
-    background:
-    radial-gradient(circle at top left,#2a2a2a 0%,transparent 25%),
-    radial-gradient(circle at bottom right,#111 0%,transparent 30%),
-    linear-gradient(135deg,#000000,#0d0d0d,#141414);
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin: 10px 0;
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 1px;
+        }
 
-    position:relative;
-}
+        .bio {
+            font-size: 0.9rem;
+            color: #aaa;
+            margin-bottom: 35px;
+            letter-spacing: 1px;
+        }
 
-/* تأثير ضوء متحرك */
-body::before{
-    content:"";
-    position:absolute;
-    width:500px;
-    height:500px;
-    background:rgba(255,255,255,0.04);
-    border-radius:50%;
-    top:-150px;
-    left:-150px;
-    filter:blur(80px);
-    animation:move 8s infinite alternate ease-in-out;
-}
+        /* تنسيق الروابط المحسن */
+        .link-card {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #fff;
+            padding: 16px;
+            margin-bottom: 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 700;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
 
-body::after{
-    content:"";
-    position:absolute;
-    width:400px;
-    height:400px;
-    background:rgba(255,215,0,0.06);
-    border-radius:50%;
-    bottom:-120px;
-    right:-120px;
-    filter:blur(70px);
-    animation:move2 10s infinite alternate ease-in-out;
-}
+        .link-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            transition: 0.5s;
+        }
 
-@keyframes move{
-    from{
-        transform:translate(0,0);
-    }
-    to{
-        transform:translate(80px,40px);
-    }
-}
+        .link-card:hover::before {
+            left: 100%;
+        }
 
-@keyframes move2{
-    from{
-        transform:translate(0,0);
-    }
-    to{
-        transform:translate(-70px,-50px);
-    }
-}
+        .link-card:hover {
+            transform: scale(1.05);
+            border-color: #d4af37;
+            background: rgba(212, 175, 55, 0.1);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
 
-/* البطاقة الرئيسية */
-.container{
-    position:relative;
-    width:90%;
-    max-width:390px;
+        /* لمسة جمالية لكل منصة */
+        .facebook:hover { border-color: #1877f2; color: #1877f2; }
+        .instagram:hover { border-color: #e4405f; color: #e4405f; }
+        .tiktok:hover { border-color: #00f2ea; color: #00f2ea; }
 
-    padding:45px 25px;
+        .footer {
+            margin-top: 40px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: rgba(212, 175, 55, 0.6);
+            letter-spacing: 4px;
+        }
 
-    border-radius:35px;
-
-    background:rgba(20,20,20,0.65);
-
-    border:1px solid rgba(255,255,255,0.08);
-
-    backdrop-filter:blur(15px);
-    -webkit-backdrop-filter:blur(15px);
-
-    box-shadow:
-    0 0 30px rgba(0,0,0,0.7),
-    inset 0 0 20px rgba(255,255,255,0.03);
-
-    text-align:center;
-
-    z-index:1;
-}
-
-/* الصورة */
-.profile-img{
-    width:110px;
-    height:110px;
-    border-radius:50%;
-    object-fit:cover;
-    border:3px solid #d4af37;
-
-    margin-bottom:18px;
-
-    box-shadow:0 0 25px rgba(212,175,55,0.4);
-}
-
-/* الاسم */
-h1{
-    font-size:28px;
-    font-weight:700;
-    color:#ffffff;
-    margin-bottom:8px;
-}
-
-/* الوصف */
-.bio{
-    color:#bdbdbd;
-    font-size:14px;
-    margin-bottom:35px;
-}
-
-/* الأزرار */
-.link{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    text-decoration:none;
-    color:white;
-
-    margin-bottom:18px;
-    padding:17px;
-
-    border-radius:16px;
-
-    background:linear-gradient(145deg,#111,#1c1c1c);
-
-    border:1px solid rgba(255,255,255,0.06);
-
-    transition:0.35s ease;
-
-    font-weight:600;
-    letter-spacing:0.5px;
-
-    position:relative;
-    overflow:hidden;
-}
-
-/* تأثير داخلي */
-.link::before{
-    content:"";
-    position:absolute;
-    width:100%;
-    height:100%;
-    background:linear-gradient(
-    120deg,
-    transparent,
-    rgba(255,255,255,0.08),
-    transparent
-    );
-
-    left:-100%;
-    top:0;
-    transition:0.5s;
-}
-
-.link:hover::before{
-    left:100%;
-}
-
-.link:hover{
-    transform:translateY(-5px) scale(1.02);
-
-    background:linear-gradient(145deg,#d4af37,#f5d76e);
-
-    color:black;
-
-    box-shadow:
-    0 10px 25px rgba(212,175,55,0.35);
-}
-
-/* الفوتر */
-.footer{
-    margin-top:30px;
-    color:#777;
-    font-size:11px;
-    letter-spacing:3px;
-}
-
-/* موبايل */
-@media(max-width:500px){
-
-    .container{
-        padding:40px 20px;
-    }
-
-    h1{
-        font-size:24px;
-    }
-
-}
-
-</style>
+        /* أنيميشن الدخول */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
 
-<div class="container">
+    <div class="container">
+        <!-- يمكنك وضع رابط صورتك هنا مكان src -->
+        <img src="https://via.placeholder.com/100" alt="Profile" class="profile-img">
+        
+        <h1>سيف الدين</h1>
+        <p class="bio">صانع محتوى | رؤية إبداعية</p>
 
-    <!-- ضع صورتك هنا -->
-    <img src="profile.jpg" class="profile-img">
+        <a href="https://www.facebook.com/share/15v8jgyX9eG/" class="link-card facebook" target="_blank">
+            فيسبوك
+        </a>
+        
+        <a href="https://www.instagram.com/saifeeddine67?igsh=MTI3bWV5bnk0dW1jNg==" class="link-card instagram" target="_blank">
+            إنستغرام
+        </a>
+        
+        <a href="https://www.tiktok.com/@ra10126?_r=1&_t=ZS-96HSIOC8fEC" class="link-card tiktok" target="_blank">
+            تيك توك
+        </a>
 
-    <h1>SAIF EDDINE</h1>
-
-    <p class="bio">
-        مرحباً بك في عالمي الخاص ✨
-    </p>
-
-    <a class="link" href="https://facebook.com" target="_blank">
-        Facebook
-    </a>
-
-    <a class="link" href="https://instagram.com" target="_blank">
-        Instagram
-    </a>
-
-    <a class="link" href="https://tiktok.com" target="_blank">
-        TikTok
-    </a>
-
-    <div class="footer">
-        PREMIUM EXPERIENCE
+        <div class="footer">Luxury & Professional Identity</div>
     </div>
-
-</div>
 
 </body>
 </html>

